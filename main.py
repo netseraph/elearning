@@ -128,16 +128,19 @@ def auto_elearning(browser):
 
                     # 关闭视频标签页
                     debuginfo(3, "关闭视频标签页")
-
                     browser.close()
+
                     # 焦点切换回课程标签页
                     browser.switch_to.window(_handles[1])
-                    browser.refresh()
 
-            browser.close()
-            # 焦点切换回培训班标签页
-            browser.switch_to.window(_handles[0])
-            browser.refresh()
+                    # browser.refresh()
+                    # 关闭课程标签页
+                    debuginfo(2, "关闭课程标签页")
+                    browser.close()
+
+                    # 焦点切换回培训班标签页
+                    browser.switch_to.window(_handles[0])
+                    # browser.refresh()
 
     sleep(3)
     browser.close()
