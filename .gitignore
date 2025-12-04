@@ -1,0 +1,8 @@
+/__pycache__
+*.exe
+*.log
+*.db
+*.txt
+*.zip
+*.cmd
+sand_box.*
