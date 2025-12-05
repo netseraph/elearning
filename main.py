@@ -1,7 +1,5 @@
 """电建e学自动学习"""
 
-# 2025.11.29修改
-
 import os
 from time import sleep
 import datetime
@@ -27,12 +25,12 @@ def is_element_exist(previous, element):
 def auto_elearning_simple(browser):
     """简化版自动学习"""
     browser.implicitly_wait(60)
+
     # 定位课程列表
     print("定位课程列表")
-
     _ele_list_lessonlist = browser.find_elements(by=By.CLASS_NAME, value="lesson-list")
-
     for _ele_lesson in _ele_list_lessonlist:
+        show_handles("当前处于培训班标签页", browser)
         # 课程名称
         _ele_lesson_title = _ele_lesson.find_element(
             by=By.CLASS_NAME, value="title.ellipsis-2.tr.font16.link"
@@ -54,7 +52,7 @@ def auto_elearning_simple(browser):
             _handles = browser.window_handles
 
             browser.switch_to.window(_handles[1])
-            show_handles(browser)
+            show_handles("当前处于课程标签页", browser)
 
             sleep(10)  # 强制延时,等待网页加载.
 
@@ -90,15 +88,18 @@ def auto_elearning_simple(browser):
                 by=By.CLASS_NAME, value="el-button.el-button--warning"
             )
             # 点击开始学习按钮
+            debuginfo(1, "点击开始学习按钮")
             _ele_start_btn.click()
 
+            debuginfo(1, "打开视频标签页")
             _handles_video = browser.window_handles
-            # _message = f"当前窗口的句柄:{browser.current_window_handle},所有窗口的句柄:{_handles_video}."
+            # _message = f"当前标签页的句柄:{browser.current_window_handle},所有标签页的句柄:{_handles_video}."
             # debuginfo(1, _message)
             # 焦点切换至视频播放标签页
             browser.switch_to.window(_handles_video[-1])
+            show_handles("当前处于视频标签页", browser)
 
-            # 显式等待,直到相关元素出现,最多等待120秒.
+            # 显式等待,直到相关元素出现,最多等标签页待120秒.
             _browser_wait = WebDriverWait(browser, 120)
             # 等待[播放键]元素出现
             _playbutton = "vjs-play-control.vjs-control.vjs-button.vjs-paused"
@@ -122,7 +123,7 @@ def auto_elearning_simple(browser):
 
             sleep(_duration)
 
-            show_handles(browser)
+            show_handles("当前处于视频标签页", browser)
 
             # 关闭视频标签页
             debuginfo(3, "关闭视频标签页")
@@ -130,13 +131,17 @@ def auto_elearning_simple(browser):
 
             # 焦点切换回课程标签页
             browser.switch_to.window(_handles[1])
-            show_handles(browser)
+            show_handles("当前处于课程标签页", browser)
+
+            # 关闭程标签页
+            debuginfo(2, "关闭课程标签页")
             browser.close()
 
             # 焦点切换回培训班标签页
             browser.switch_to.window(_handles[0])
-            show_handles(browser)
-            browser.refresh()
+            show_handles("当前处于培训班标签页", browser)
+
+            # browser.refresh()
 
 
 if __name__ == "__main__":

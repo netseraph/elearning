@@ -14,11 +14,11 @@ def debuginfo(level, info):
     logging.debug(info)
 
 
-def show_handles(driver):
+def show_handles(info, driver):
     """显示当前浏览器handle信息"""
-    print(
-        (
-            f"当前窗口的句柄:{driver.current_window_handle},"
-            f"所有窗口的句柄:{driver.window_handles}"
-        )
-    )
+    print(info)
+    _handles = driver.window_handles
+    print(f"现在共有{len(_handles)}个标签页,handles分别为:")
+    for _h in _handles:
+        print(f"    {_h}")
+    print(f"当前标签页的句柄为:{driver.current_window_handle}")
