@@ -88,10 +88,10 @@ def auto_elearning_simple(browser):
                 by=By.CLASS_NAME, value="el-button.el-button--warning"
             )
             # 点击开始学习按钮
-            debuginfo(1, "点击开始学习按钮")
+            debuginfo(2, "点击开始学习按钮")
             _ele_start_btn.click()
 
-            debuginfo(1, "打开视频标签页")
+            debuginfo(2, "打开视频标签页")
             _handles_video = browser.window_handles
             # _message = f"当前标签页的句柄:{browser.current_window_handle},所有标签页的句柄:{_handles_video}."
             # debuginfo(1, _message)
@@ -109,7 +109,7 @@ def auto_elearning_simple(browser):
             # 定位播放按钮
             _ele_play = browser.find_element(by=By.CLASS_NAME, value=_playbutton)
             # 点击播放按钮,开始播放视频
-            debuginfo(2, "视频加载完毕开始播放.")
+            debuginfo(3, "视频加载完毕开始播放.")
             _ele_play.click()
             # 强制等待,直到视频播放完毕
             _duration = (
@@ -117,8 +117,10 @@ def auto_elearning_simple(browser):
             ) * 61  # 每分钟按61秒计算,适当增加冗余
 
             debuginfo(
-                2,
-                f"延时{_duration}秒({datetime.timedelta(seconds=_duration)}),以便完整播放视频.",
+                3,
+                (
+                    f"延时{_duration}秒({datetime.timedelta(seconds=_duration)}),以便完整播放视频."
+                ),
             )
 
             sleep(_duration)
@@ -139,9 +141,9 @@ def auto_elearning_simple(browser):
 
             # 焦点切换回培训班标签页
             browser.switch_to.window(_handles[0])
-            show_handles("当前处于培训班标签页", browser)
-
-            # browser.refresh()
+            show_handles("结束时，前处于培训班标签页", browser)
+            browser.refresh()
+            sleep(30)
 
 
 if __name__ == "__main__":
