@@ -43,7 +43,7 @@ def auto_elearning_simple(browser):
             show_info(
                 1,
                 (
-                    f"课程{i+1}: [{_ele_lesson_title.text}] 已完成: {_ele_lesson_progress.text}"
+                    f"课程{i}: [{_ele_lesson_title.text}] 已完成: {_ele_lesson_progress.text}"
                 ),
             )
 
