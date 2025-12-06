@@ -23,7 +23,7 @@ def show_info(level, info):
         _space = "  " * level
         _message = f"{_space}└─── {info}"
         print(_message)
-    logging.debug(info)
+    logging.info(info)
 
 
 def is_element_exist(previous, element):
