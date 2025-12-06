@@ -8,18 +8,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
 import settings as SET
-from debug_module import debuginfo, show_handles
-
-
-def is_element_exist(previous, element):
-    """判断元素是否存在"""
-    try:
-        previous.find_element(by=By.CLASS_NAME, value=element)
-        return True
-    except NoSuchElementException:
-        return False
+from mymodule import show_info
 
 
 def auto_elearning_simple(browser):
@@ -30,7 +20,7 @@ def auto_elearning_simple(browser):
     print("定位课程列表")
     _ele_list_lessonlist = browser.find_elements(by=By.CLASS_NAME, value="lesson-list")
     for _ele_lesson in _ele_list_lessonlist:
-        show_handles("当前处于培训班标签页", browser)
+
         # 课程名称
         _ele_lesson_title = _ele_lesson.find_element(
             by=By.CLASS_NAME, value="title.ellipsis-2.tr.font16.link"
@@ -40,7 +30,7 @@ def auto_elearning_simple(browser):
             by=By.CLASS_NAME, value="el-progress__text"
         )
 
-        debuginfo(
+        show_info(
             0, (f"课程: [{_ele_lesson_title.text}] 已完成: {_ele_lesson_progress.text}")
         )
 
@@ -52,7 +42,6 @@ def auto_elearning_simple(browser):
             _handles = browser.window_handles
 
             browser.switch_to.window(_handles[1])
-            show_handles("当前处于课程标签页", browser)
 
             sleep(10)  # 强制延时,等待网页加载.
 
@@ -79,7 +68,7 @@ def auto_elearning_simple(browser):
             )
             _learnd = _ele_learnd.text
 
-            debuginfo(
+            show_info(
                 1, f"本课程总时长为{_chapterduration}分钟,已累计学习{_learnd}分钟."
             )
 
@@ -88,16 +77,15 @@ def auto_elearning_simple(browser):
                 by=By.CLASS_NAME, value="el-button.el-button--warning"
             )
             # 点击开始学习按钮
-            debuginfo(2, "点击开始学习按钮")
+            show_info(2, "点击开始学习按钮")
             _ele_start_btn.click()
 
-            debuginfo(2, "打开视频标签页")
+            show_info(2, "打开视频标签页")
             _handles_video = browser.window_handles
             # _message = f"当前标签页的句柄:{browser.current_window_handle},所有标签页的句柄:{_handles_video}."
-            # debuginfo(1, _message)
+            # show_info(1, _message)
             # 焦点切换至视频播放标签页
             browser.switch_to.window(_handles_video[-1])
-            show_handles("当前处于视频标签页", browser)
 
             # 显式等待,直到相关元素出现,最多等标签页待120秒.
             _browser_wait = WebDriverWait(browser, 120)
@@ -109,14 +97,13 @@ def auto_elearning_simple(browser):
             # 定位播放按钮
             _ele_play = browser.find_element(by=By.CLASS_NAME, value=_playbutton)
             # 点击播放按钮,开始播放视频
-            debuginfo(3, "视频加载完毕开始播放.")
+            show_info(3, "视频加载完毕开始播放.")
             _ele_play.click()
             # 强制等待,直到视频播放完毕
             _duration = (
                 int(_chapterduration) - int(_learnd)
             ) * 61  # 每分钟按61秒计算,适当增加冗余
-
-            debuginfo(
+            show_info(
                 3,
                 (
                     f"延时{_duration}秒({datetime.timedelta(seconds=_duration)}),以便完整播放视频."
@@ -125,25 +112,19 @@ def auto_elearning_simple(browser):
 
             sleep(_duration)
 
-            show_handles("当前处于视频标签页", browser)
-
             # 关闭视频标签页
-            debuginfo(3, "关闭视频标签页")
+            show_info(3, "关闭视频标签页")
             browser.close()
 
             # 焦点切换回课程标签页
             browser.switch_to.window(_handles[1])
-            show_handles("当前处于课程标签页", browser)
 
             # 关闭程标签页
-            debuginfo(2, "关闭课程标签页")
+            show_info(2, "关闭课程标签页")
             browser.close()
 
             # 焦点切换回培训班标签页
             browser.switch_to.window(_handles[0])
-            show_handles("结束时，前处于培训班标签页", browser)
-            browser.refresh()
-            sleep(30)
 
 
 if __name__ == "__main__":
@@ -165,7 +146,8 @@ if __name__ == "__main__":
     else:
         driver = webdriver.Chrome(options=options)
 
-    driver.maximize_window()
+    driver.set_window_position(0, 0)
+    driver.set_window_size(800, 600)
     driver.implicitly_wait(60)
 
     # 打开登录网页
@@ -180,6 +162,7 @@ if __name__ == "__main__":
         URL = f"{SET.ORIGIN_URL}{session_path}"
         # 打开培训班
         driver.get(URL)
+        driver.refresh()
         auto_elearning_simple(driver)
 
     driver.quit()

@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 import settings as SET
-from debug_module import debuginfo, show_handles
+from mymodule import show_info, show_handles
 
 
 def is_element_exist(previous, element):
@@ -40,7 +40,7 @@ def auto_elearning(browser):
         _message = (
             f"课程: [{_ele_lesson_title.text}] 已完成: {_ele_lesson_progress.text}"
         )
-        debuginfo(0, _message)
+        show_info(0, _message)
 
         if _ele_lesson_progress.text != "100%":
             # 打开未完成的课程
@@ -55,7 +55,7 @@ def auto_elearning(browser):
                 by=By.CLASS_NAME, value="list.el-row.is-align-middle.el-row--flex"
             )
 
-            debuginfo(1, f"本课程共有{len(ele_list_videolist)}个视频")
+            show_info(1, f"本课程共有{len(ele_list_videolist)}个视频")
 
             for ele_video in ele_list_videolist:
                 _ele_video_title = ele_video.find_element(
@@ -69,15 +69,15 @@ def auto_elearning(browser):
                 for item in split:
                     _duration = _duration * 60 + int(item)
 
-                debuginfo(2, f"视频: [{_ele_video_title.text}] 时长: {_duration}秒")
+                show_info(2, f"视频: [{_ele_video_title.text}] 时长: {_duration}秒")
 
                 # 如果找到已完成标记,说明视频播放完整
                 if is_element_exist(
                     ele_video, "iconfont.icon-yiwancheng1.orange.font20"
                 ):
-                    debuginfo(3, "此视频已完整播放")
+                    show_info(3, "此视频已完整播放")
                 else:
-                    debuginfo(3, "此视频未完成播放")
+                    show_info(3, "此视频未完成播放")
 
                     # 点击视频链接,打开视频播放标签页
                     _ele_video_title.click()
@@ -99,18 +99,18 @@ def auto_elearning(browser):
                     )
                     # 点击播放按钮,开始播放视频
 
-                    debuginfo(3, "视频加载完毕开始播放.")
+                    show_info(3, "视频加载完毕开始播放.")
                     _ele_play.click()
                     # 强制等待,直到视频播放完毕
 
-                    debuginfo(3, f"延时{_duration+5}秒,以便完整播放视频.")
+                    show_info(3, f"延时{_duration+5}秒,以便完整播放视频.")
 
                     sleep(_duration + 5)
 
                     show_handles(browser)
 
                     # 关闭视频标签页
-                    debuginfo(3, "关闭视频标签页")
+                    show_info(3, "关闭视频标签页")
                     browser.close()
 
                     # 焦点切换回课程标签页
@@ -119,7 +119,7 @@ def auto_elearning(browser):
 
                     # browser.refresh()
                     # 关闭课程标签页
-                    debuginfo(2, "关闭课程标签页")
+                    show_info(2, "关闭课程标签页")
                     browser.close()
                     show_handles(browser)
 
