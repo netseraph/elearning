@@ -1,24 +1,33 @@
-"""常用参数"""
+"""配置"""
 
 import logging
 import os
 
-__FILENAME = f"{os.path.split(os.getcwd())[-1]}.log"
-__FORMAT = "%(asctime)s - %(filename)s - %(levelname)s - %(message)s"
-__LEVEL = logging.INFO
-logging.basicConfig(
-    filename=__FILENAME, format=__FORMAT, level=__LEVEL, encoding="UTF-8"
-)
 
-# 网址
-ORIGIN_URL = "https://elearning.powerchina.cn"
+def init_logging(level: int = 2):
+    """初始化logging"""
+    logging.getLogger("test")
 
-# 需要完成的培训班列表
-SESSION_PATH_LIST = (
-    "/tms/index.html#/classesDetail?trainclassId=4222126803291984",
-    "/tms/index.html#/classesDetail?trainclassId=1688870266388618",
-)
-# 需暂时跳过的课程
-LESSON_SKIP_LIST = (0, 22, 23)
+    _level_list = (
+        logging.NOTSET,
+        logging.DEBUG,
+        logging.INFO,
+        logging.WARNING,
+        logging.ERROR,
+        logging.CRITICAL,
+    )
+    _filename = f"{os.path.split(os.path.dirname(os.path.abspath(__file__)))[-1]}.log"
+    _format = "%(asctime)s - %(filename)s - %(levelname)s - %(message)s"
+    if 0 <= level < len(_level_list):
+        _l = level
+    elif level < 0:
+        _l = 0
+    else:
+        _l = len(_level_list) - 1
 
-MPS = 61  # 每分钟按61秒转换,适当增加延时,保证视频播放完成.
+    _level = _level_list[_l]
+
+    logging.basicConfig(
+        filename=_filename, format=_format, level=_level, encoding="UTF-8"
+    )
+    

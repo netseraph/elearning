@@ -8,7 +8,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
-import settings as SET
+from config import ORIGIN_URL, SESSION_PATH_LIST
+from settings import init_logging
 from mymodule import show_info, show_handles
 
 
@@ -133,6 +134,7 @@ def auto_elearning(browser):
 
 
 if __name__ == "__main__":
+    init_logging()
     # 使用Chrome浏览器
     options = webdriver.ChromeOptions()
     # 实现了规避监测,禁止打印日志
@@ -155,15 +157,15 @@ if __name__ == "__main__":
     driver.implicitly_wait(60)
 
     # 打开登录网页
-    driver.get(SET.ORIGIN_URL)
+    driver.get(ORIGIN_URL)
     # 等待扫码登录,最长等待60秒
     driver_wait = WebDriverWait(driver, 300)
 
     # 等待[用户]元素出现,如果出现,意味登录成功.
     driver_wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "crumbs1")))
 
-    for session_path in SET.SESSION_PATH_LIST:
-        URL = f"{SET.ORIGIN_URL}{session_path}"
+    for session_path in SESSION_PATH_LIST:
+        URL = f"{ORIGIN_URL}{session_path}"
         # 打开培训班
         driver.get(URL)
         auto_elearning(driver)

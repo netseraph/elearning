@@ -2,14 +2,14 @@
 
 import os
 from time import sleep
-import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-import settings as SET
-from mymodule import show_info
+from config import ORIGIN_URL, SESSION_PATH_LIST, LESSON_SKIP_LIST, MPS
+from settings import init_logging
+from mymodule import show_info, seconds_to_hms
 
 
 def auto_elearning_simple(browser):
@@ -47,7 +47,7 @@ def auto_elearning_simple(browser):
                 ),
             )
 
-            if _ele_lesson_progress.text != "100%" and i not in SET.LESSON_SKIP_LIST:
+            if _ele_lesson_progress.text != "100%" and i not in LESSON_SKIP_LIST:
                 _completion_mark = False
                 # 点击课程标题,在新的标签页打开未完成的课程.
                 _ele_lesson_title.click()
@@ -91,18 +91,18 @@ def auto_elearning_simple(browser):
                     by=By.CLASS_NAME, value="el-button.el-button--warning"
                 )
                 # 点击开始学习按钮
-                show_info(3, "点击开始学习按钮")
+                show_info(3, "开始学习")
                 _ele_start_btn.click()
 
-                show_info(3, "打开视频标签页")
+                # 打开视频标签页
                 _handles_video = browser.window_handles
-                # _message = f"当前标签页的句柄:{browser.current_window_handle},所有标签页的句柄:{_handles_video}."
-                # show_info(1, _message)
+
                 # 焦点切换至视频播放标签页
                 browser.switch_to.window(_handles_video[-1])
 
                 # 显式等待,直到相关元素出现,最多等标签页待300秒.
                 _browser_wait = WebDriverWait(browser, 300)
+
                 # 等待[播放键]元素出现
                 _playbutton = "vjs-play-control.vjs-control.vjs-button.vjs-paused"
                 _browser_wait.until(
@@ -110,19 +110,24 @@ def auto_elearning_simple(browser):
                 )
                 # 定位播放按钮
                 _ele_play = browser.find_element(by=By.CLASS_NAME, value=_playbutton)
+
                 # 点击播放按钮,开始播放视频
-                show_info(4, "视频加载完毕开始播放.")
+
                 _ele_play.click()
                 # 强制等待,直到视频播放完毕
                 # 将分钟转换为秒
-                _duration = (_chapterduration - _learnd) * SET.MPS
-                _message = f"延时{_duration}秒({datetime.timedelta(seconds=_duration)}),以便完整播放视频."
-                show_info(4, _message)
+                _duration = (_chapterduration - _learnd) * MPS
+
+                # 视频加载完成，开始播放。预计播放时长为 9028 秒（2 小时 30 分 28 秒），请耐心观看。
+                _h, _m, _s = seconds_to_hms(duration=_duration)
+                _message = f"视频加载完成，开始播放。预计播放时长为 {_duration} 秒（{_h} 小时 {_m} 分 {_s} 秒），请耐心观看。"
+                show_info(3, _message)
 
                 sleep(_duration)
 
+                show_info(3, "视频播放结束.")
                 # 关闭视频标签页
-                show_info(4, "关闭视频标签页")
+
                 browser.close()
 
                 # 焦点切换回课程标签页
@@ -138,6 +143,8 @@ def auto_elearning_simple(browser):
 
 
 if __name__ == "__main__":
+    init_logging()
+    show_info(0, "电建e学培训班开始自动学习")
     # 使用Chrome浏览器
     options = webdriver.ChromeOptions()
     # 实现了规避监测,禁止打印日志
@@ -150,7 +157,7 @@ if __name__ == "__main__":
     driverath = f"{os.getcwd()}/chromedriver.exe"
     print(driverath)
     if os.path.exists(driverath):
-        print("本地文件夹找到chromedriver.exe,尝试使用本地driver")
+        # print("本地文件夹找到chromedriver.exe,尝试使用本地driver")
         service = Service(driverath)
         driver = webdriver.Chrome(options=options, service=service)
     else:
@@ -161,15 +168,15 @@ if __name__ == "__main__":
     driver.implicitly_wait(60)
 
     # 打开登录网页
-    driver.get(SET.ORIGIN_URL)
+    driver.get(ORIGIN_URL)
     # 等待扫码登录,最长等待60秒
     driver_wait = WebDriverWait(driver, 60)
 
     # 等待[用户]元素出现,如果出现,意味登录成功.
     driver_wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "crumbs1")))
 
-    for session_path in SET.SESSION_PATH_LIST:
-        URL = f"{SET.ORIGIN_URL}{session_path}"
+    for session_path in SESSION_PATH_LIST:
+        URL = f"{ORIGIN_URL}{session_path}"
         # 打开培训班
         driver.get(URL)
         driver.refresh()
